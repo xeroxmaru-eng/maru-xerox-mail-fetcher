@@ -111,7 +111,7 @@ export default function EmailModal({ email, onClose }: EmailModalProps) {
                   <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
                     <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
                       <User className="w-3 h-3" />
-                      {email.to.join(', ')}
+                      {email.from.join(', ')}
                     </span>
                     <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
                       <Calendar className="w-3 h-3" />

@@ -98,7 +98,7 @@ export async function exportToWord(
     children: [
       headerCell('Date', colWidths[0]),
       headerCell('Time', colWidths[1]),
-      headerCell('Recipient(s)', colWidths[2]),
+      headerCell('Sender(s)', colWidths[2]),
       headerCell('Subject', colWidths[3]),
       headerCell('Body', colWidths[4]),
       headerCell('Attachments', colWidths[5]),
@@ -112,7 +112,7 @@ export async function exportToWord(
       children: [
         dataCell(email.date, colWidths[0], isAlt),
         dataCell(email.time, colWidths[1], isAlt),
-        dataCell(email.to.join(', '), colWidths[2], isAlt),
+        dataCell(email.from.join(', '), colWidths[2], isAlt),
         dataCell(email.subject, colWidths[3], isAlt),
         dataCell(email.bodyText.slice(0, 200), colWidths[4], isAlt),
         dataCell(email.attachments.join('\n'), colWidths[5], isAlt),
@@ -147,7 +147,7 @@ export async function exportToWord(
               new Paragraph({
                 children: [
                   new TextRun({
-                    text: 'MARU XEROX — Sent Mail Export Report',
+                    text: 'MARU XEROX — Inbox Mail Export Report',
                     bold: true,
                     color: BRAND_COLOR,
                     size: 20,
@@ -187,11 +187,11 @@ export async function exportToWord(
         children: [
           // Title
           new Paragraph({
-            text: 'Maru Xerox — Sent Mail Report',
+            text: 'Maru Xerox — Inbox Mail Report',
             heading: HeadingLevel.HEADING_1,
             children: [
               new TextRun({
-                text: 'Maru Xerox — Sent Mail Report',
+                text: 'Maru Xerox — Inbox Mail Report',
                 bold: true,
                 size: 32,
                 color: BRAND_COLOR,

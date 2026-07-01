@@ -1,5 +1,5 @@
 // hooks/useEmails.ts
-// Custom hook for fetching and managing Gmail sent emails
+// Custom hook for fetching and managing Gmail inbox emails
 
 'use client';
 

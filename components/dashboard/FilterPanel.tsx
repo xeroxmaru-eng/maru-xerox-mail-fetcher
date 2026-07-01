@@ -168,8 +168,8 @@ export default function FilterPanel({ onFetch, isLoading }: FilterPanelProps) {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <InputField
                   id="recipient"
-                  label="Recipient Email"
-                  placeholder="e.g. prints.deluxe@gmail.com"
+                  label="Sender Email"
+                  placeholder="e.g. sender@gmail.com"
                   icon={User}
                   registration={register('recipient')}
                 />

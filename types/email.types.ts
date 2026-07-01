@@ -5,7 +5,7 @@ export interface EmailMessage {
   id: string;
   date: string;       // "2024-01-15"
   time: string;       // "14:32"
-  to: string[];       // array of recipient email addresses
+  from: string[];     // array of sender email addresses (inbox)
   subject: string;
   bodyText: string;   // plain text version of the body
   bodyHtml: string;   // HTML version (sanitized before rendering)
@@ -16,7 +16,7 @@ export interface EmailMessage {
 export interface FetchFilters {
   fromDate?: string;        // ISO date string
   toDate?: string;          // ISO date string
-  recipient?: string;       // filter by "To" address
+  recipient?: string;       // filter by sender "From" address
   subjectKeyword?: string;  // filter by subject
   bodyKeyword?: string;     // filter by body content
   attachmentName?: string;  // filter by attachment filename

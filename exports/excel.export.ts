@@ -27,7 +27,7 @@ export async function exportToExcel(
   workbook.modified = new Date();
 
   // ── Sheet 1: Emails ──────────────────────────────────────────
-  const sheet = workbook.addWorksheet('Sent Emails', {
+  const sheet = workbook.addWorksheet('Inbox Emails', {
     views: [{ state: 'frozen', ySplit: 1 }], // Freeze header row
     properties: { tabColor: { argb: BRAND_COLOR } },
   });
@@ -36,7 +36,7 @@ export async function exportToExcel(
   sheet.columns = [
     { header: 'Date', key: 'date', width: 14 },
     { header: 'Time', key: 'time', width: 10 },
-    { header: 'Recipient(s)', key: 'to', width: 35 },
+    { header: 'Sender(s)', key: 'from', width: 35 },
     { header: 'Subject', key: 'subject', width: 45 },
     { header: 'Body', key: 'body', width: 60 },
     { header: 'Attachments', key: 'attachments', width: 40 },
@@ -72,7 +72,7 @@ export async function exportToExcel(
     const row = sheet.addRow({
       date: email.date,
       time: email.time,
-      to: email.to.join(', '),
+      from: email.from.join(', '),
       subject: email.subject,
       body: email.bodyText,
       attachments: email.attachments.join('\n'),

@@ -1,10 +1,10 @@
 // app/api/emails/route.ts
-// Protected API route for fetching Gmail sent emails.
+// Protected API route for fetching Gmail inbox emails.
 // Validates session, builds query, delegates to gmail.service.ts
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { fetchSentEmails } from '@/services/gmail.service';
+import { fetchInboxEmails } from '@/services/gmail.service';
 import { buildGmailQuery } from '@/lib/utils';
 import { ApiEmailResponse } from '@/types/email.types';
 
@@ -56,7 +56,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiEmailRespon
     console.log('[API /emails] Generated query string:', query);
 
     // Fetch emails from Gmail API
-    const emails = await fetchSentEmails(
+    const emails = await fetchInboxEmails(
       session.accessToken as string,
       query,
       maxResults

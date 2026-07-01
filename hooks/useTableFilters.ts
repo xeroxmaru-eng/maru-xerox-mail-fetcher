@@ -19,7 +19,7 @@ interface UseTableFiltersReturn {
 
 /**
  * Manages client-side email filtering:
- * - Full-text search across subject, body, recipient, and attachment names
+ * - Full-text search across subject, body, sender, and attachment names
  * - Attachment presence filter (all / has-attachments / no-attachments)
  * - Sort direction (newest first / oldest first)
  */
@@ -38,7 +38,7 @@ export function useTableFilters(emails: EmailMessage[]): UseTableFiltersReturn {
         (email) =>
           email.subject.toLowerCase().includes(q) ||
           email.bodyText.toLowerCase().includes(q) ||
-          email.to.some((addr) => addr.toLowerCase().includes(q)) ||
+          email.from.some((addr) => addr.toLowerCase().includes(q)) ||
           email.attachments.some((att) => att.toLowerCase().includes(q))
       );
     }

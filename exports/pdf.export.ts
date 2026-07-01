@@ -47,7 +47,7 @@ export async function exportToPdf(
   filters: FetchFilters
 ): Promise<void> {
   const doc = await PDFDocument.create();
-  doc.setTitle('Maru Xerox — Sent Emails Report');
+  doc.setTitle('Maru Xerox — Inbox Emails Report');
   doc.setAuthor('Maru Xerox Mail Fetcher');
   doc.setCreationDate(new Date());
 
@@ -74,7 +74,7 @@ export async function exportToPdf(
     color: rgb(1, 1, 1),
   });
 
-  coverPage.drawText('Sent Mail Export Report', {
+  coverPage.drawText('Inbox Mail Export Report', {
     x: MARGIN,
     y: PAGE_HEIGHT - 72,
     size: 13,
@@ -124,7 +124,7 @@ export async function exportToPdf(
   const cols: [string, number, number][] = [
     ['Date',       MARGIN,       70],
     ['Time',       MARGIN + 70,  50],
-    ['Recipient',  MARGIN + 120, 160],
+    ['Sender',    MARGIN + 120, 160],
     ['Subject',    MARGIN + 280, 200],
     ['Body',       MARGIN + 480, 220],
     ['Attachments',MARGIN + 700, 100],
@@ -168,7 +168,7 @@ export async function exportToPdf(
       const values = [
         email.date,
         email.time,
-        email.to.join(', '),
+        email.from.join(', '),
         email.subject,
         email.bodyText,
         email.attachments.join(', '),

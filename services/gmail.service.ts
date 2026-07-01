@@ -1,5 +1,5 @@
 // services/gmail.service.ts
-// Gmail API abstraction layer — read-only sent mail fetching
+// Gmail API abstraction layer — read-only inbox mail fetching
 // IMPORTANT: This service NEVER modifies, deletes, or sends emails.
 
 import { google } from 'googleapis';
@@ -127,11 +127,11 @@ function parseDateHeader(dateStr: string): { date: string; time: string } {
 }
 
 /**
- * Parses "To" header into an array of email addresses.
+ * Parses "From" header into an array of email addresses.
  */
-function parseToHeader(toStr: string): string[] {
-  if (!toStr) return [];
-  return toStr
+function parseFromHeader(fromStr: string): string[] {
+  if (!fromStr) return [];
+  return fromStr
     .split(',')
     .map((addr) => {
       // Extract just the email from "Name <email>" format
@@ -142,15 +142,15 @@ function parseToHeader(toStr: string): string[] {
 }
 
 /**
- * Fetches sent emails from Gmail based on the provided query and options.
+ * Fetches inbox emails from Gmail based on the provided query and options.
  * This is the main exported function used by the API route.
  *
  * @param accessToken - User's Google OAuth access token
- * @param query - Gmail search query string (e.g., "in:sent after:2024/01/01")
+ * @param query - Gmail search query string (e.g., "in:inbox after:2024/01/01")
  * @param maxResults - Maximum number of messages to return
  * @returns Array of parsed EmailMessage objects
  */
-export async function fetchSentEmails(
+export async function fetchInboxEmails(
   accessToken: string,
   query: string,
   maxResults: number = 50
@@ -194,7 +194,7 @@ export async function fetchSentEmails(
 
       const dateStr = getHeader(headers, 'Date');
       const { date, time } = parseDateHeader(dateStr);
-      const toStr = getHeader(headers, 'To');
+      const fromStr = getHeader(headers, 'From');
       const subject = getHeader(headers, 'Subject');
 
       const { text: bodyText, html: bodyHtml } = extractBody(
@@ -208,7 +208,7 @@ export async function fetchSentEmails(
         id: msgData.id ?? '',
         date,
         time,
-        to: parseToHeader(toStr),
+        from: parseFromHeader(fromStr),
         subject: subject || '(No Subject)',
         bodyText: bodyText || '(No body)',
         bodyHtml,

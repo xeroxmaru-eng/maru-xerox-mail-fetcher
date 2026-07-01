@@ -97,7 +97,7 @@ export function buildGmailQuery(filters: {
     parts.push(`before:${filters.toDate.replace(/-/g, '/')}`);
   }
   if (filters.recipient) {
-    parts.push(`to:${filters.recipient}`);
+    parts.push(`from:${filters.recipient}`);
   }
   if (filters.subjectKeyword) {
     parts.push(`subject:${filters.subjectKeyword}`);
@@ -117,7 +117,7 @@ export function buildGmailQuery(filters: {
  */
 export function generateExportFilename(format: 'xlsx' | 'pdf' | 'docx'): string {
   const timestamp = new Date().toISOString().slice(0, 10);
-  return `maru-xerox-sent-emails-${timestamp}.${format}`;
+  return `maru-xerox-inbox-emails-${timestamp}.${format}`;
 }
 
 /**
