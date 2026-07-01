@@ -161,6 +161,7 @@ export async function fetchInboxEmails(
   const listResponse = await gmail.users.messages.list({
     userId: 'me',
     q: query,
+    labelIds: ['INBOX'],
     maxResults: Math.min(maxResults, 500), // Gmail API hard limit safety
   });
 
