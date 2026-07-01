@@ -20,7 +20,6 @@ export default function DashboardPage() {
     emails,
     isLoading,
     error,
-    lastQuery,
     fetchEmails,
     clearError,
   } = useEmails();
@@ -36,11 +35,6 @@ export default function DashboardPage() {
   } = useTableFilters(emails);
 
   const [selectedEmail, setSelectedEmail] = useState<EmailMessage | null>(null);
-
-  // Active filters helper for export metadata
-  const currentFilters = {
-    maxResults: 100, // this will be overridden if we track the exact form state, but as a fallback:
-  };
 
   return (
     <div className="min-h-screen flex flex-col" style={{ background: 'var(--bg-primary)' }}>

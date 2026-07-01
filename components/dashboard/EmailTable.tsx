@@ -231,6 +231,7 @@ export default function EmailTable({ emails, isLoading, onViewEmail }: EmailTabl
     }),
   ];
 
+  // eslint-disable-next-line react-hooks/incompatible-library
   const table = useReactTable({
     data: pageEmails,
     columns,
