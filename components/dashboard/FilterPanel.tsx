@@ -121,7 +121,7 @@ export default function FilterPanel({ onFetch, isLoading }: FilterPanelProps) {
               Fetch Emails
             </p>
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Configure filters and fetch sent emails
+              Configure filters and fetch inbox emails
             </p>
           </div>
         </div>

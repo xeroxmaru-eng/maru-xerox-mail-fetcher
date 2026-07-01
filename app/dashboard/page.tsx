@@ -48,7 +48,7 @@ export default function DashboardPage() {
               Dashboard
             </h1>
             <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
-              Manage, analyze, and export your Google Sent Mail.
+              Manage, analyze, and export your Gmail Inbox.
             </p>
           </div>
 

@@ -115,7 +115,7 @@ export default function StatsCards({ emails, filteredCount, isLoading }: StatsCa
       icon: Mail,
       color: '#3b82f6',
       bgColor: 'rgba(59,130,246,0.12)',
-      description: 'Total sent emails fetched',
+      description: 'Total inbox emails fetched',
     },
     {
       label: "Today's Emails",

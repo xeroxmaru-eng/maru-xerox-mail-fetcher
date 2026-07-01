@@ -88,7 +88,7 @@ export function buildGmailQuery(filters: {
   bodyKeyword?: string;
   attachmentName?: string;
 }): string {
-  const parts: string[] = ['in:sent'];
+  const parts: string[] = ['in:inbox'];
 
   if (filters.fromDate) {
     parts.push(`after:${filters.fromDate.replace(/-/g, '/')}`);

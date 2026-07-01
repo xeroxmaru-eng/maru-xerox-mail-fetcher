@@ -12,6 +12,8 @@ import type { NextAuthConfig } from 'next-auth';
  * - Handles token refresh automatically when expired.
  */
 export const authConfig: NextAuthConfig = {
+  // Required on Vercel — without this, OAuth callbacks and session cookies can break in production.
+  trustHost: true,
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,

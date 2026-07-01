@@ -265,7 +265,7 @@ export default function EmailTable({ emails, isLoading, onViewEmail }: EmailTabl
           No emails found
         </h3>
         <p className="text-sm text-center max-w-xs" style={{ color: 'var(--text-muted)' }}>
-          Use the filters above to fetch sent emails from your Gmail account.
+          Use the filters above to fetch inbox emails from your Gmail account.
         </p>
       </motion.div>
     );

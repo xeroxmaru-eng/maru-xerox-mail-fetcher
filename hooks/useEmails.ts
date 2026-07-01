@@ -48,6 +48,15 @@ export function useEmails(): UseEmailsReturn {
         credentials: 'include',
       });
 
+      const contentType = response.headers.get('content-type') ?? '';
+      if (!contentType.includes('application/json')) {
+        throw new Error(
+          response.redirected
+            ? 'Session expired or invalid. Please sign out and sign in again.'
+            : 'Unexpected server response. Check Vercel environment variables (AUTH_SECRET, AUTH_URL).'
+        );
+      }
+
       const data: ApiEmailResponse = await response.json();
 
       if (!response.ok) {
