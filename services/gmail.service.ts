@@ -142,15 +142,15 @@ function parseFromHeader(fromStr: string): string[] {
 }
 
 /**
- * Fetches inbox emails from Gmail based on the provided query and options.
+ * Fetches sent emails from Gmail based on the provided query and options.
  * This is the main exported function used by the API route.
  *
  * @param accessToken - User's Google OAuth access token
- * @param query - Gmail search query string (e.g., "in:inbox after:2024/01/01")
+ * @param query - Gmail search query string (e.g., "in:sent to:someone@gmail.com")
  * @param maxResults - Maximum number of messages to return
  * @returns Array of parsed EmailMessage objects
  */
-export async function fetchInboxEmails(
+export async function fetchSentEmails(
   accessToken: string,
   query: string,
   maxResults: number = 50
@@ -161,7 +161,6 @@ export async function fetchInboxEmails(
   const listResponse = await gmail.users.messages.list({
     userId: 'me',
     q: query,
-    labelIds: ['INBOX'],
     maxResults: Math.min(maxResults, 500), // Gmail API hard limit safety
   });
 

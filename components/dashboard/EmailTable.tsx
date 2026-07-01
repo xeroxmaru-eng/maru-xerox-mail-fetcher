@@ -147,10 +147,10 @@ export default function EmailTable({ emails, isLoading, onViewEmail }: EmailTabl
       ),
       size: 70,
     }),
-    columnHelper.accessor('to', {
-      header: 'To',
+    columnHelper.accessor('from', {
+      header: 'Recipient(s)',
       cell: (info) => {
-        const addresses = info.getValue();
+        const addresses = info.getValue() ?? [];
         return (
           <div className="max-w-[200px]">
             {addresses.slice(0, 2).map((addr) => (

@@ -1,20 +1,19 @@
 ﻿'use client';
 // components/dashboard/FilterPanel.tsx
-// Email fetch filters form using React Hook Form + Zod
+// Email fetch filters form - asks for recipient email first
 
 import { useState } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Calendar, User, Hash, ChevronDown, RotateCcw, Loader2, Terminal } from 'lucide-react';
+import { Search, Calendar, Hash, ChevronDown, RotateCcw, Loader2, Terminal, AtSign, Send } from 'lucide-react';
 import { FetchFilters } from '@/types/email.types';
 
-// Zod validation schema
 const filterSchema = z.object({
+  recipientEmail: z.string().optional(),
   fromDate: z.string().optional(),
   toDate: z.string().optional(),
-  senderEmail: z.string().optional(),
   maxResults: z.number().min(1).max(500),
 });
 
@@ -25,70 +24,22 @@ interface FilterPanelProps {
   isLoading: boolean;
 }
 
-interface InputFieldProps {
-  id: string;
-  label: string;
-  placeholder: string;
-  icon: React.ElementType;
-  type?: string;
-  hint?: string;
-  registration: ReturnType<ReturnType<typeof useForm<FilterFormValues>>['register']>;
-}
-
-function InputField({ id, label, placeholder, icon: Icon, type = 'text', hint, registration }: InputFieldProps) {
-  return (
-    <div className="space-y-1.5">
-      <label
-        htmlFor={id}
-        className="text-xs font-medium flex items-center gap-1.5"
-        style={{ color: 'var(--text-secondary)' }}
-      >
-        <Icon className="w-3.5 h-3.5" strokeWidth={2} />
-        {label}
-      </label>
-      <input
-        id={id}
-        type={type}
-        placeholder={placeholder}
-        {...registration}
-        className="w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-all duration-200"
-        style={{
-          background: 'var(--bg-tertiary)',
-          border: '1px solid var(--border-color)',
-          color: 'var(--text-primary)',
-        }}
-        onFocus={(e) => {
-          e.target.style.borderColor = '#3b82f6';
-          e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.15)';
-        }}
-        onBlur={(e) => {
-          e.target.style.borderColor = 'var(--border-color)';
-          e.target.style.boxShadow = 'none';
-        }}
-      />
-      {hint && (
-        <p className="text-xs" style={{ color: 'var(--text-muted)' }}>{hint}</p>
-      )}
-    </div>
-  );
-}
-
 function buildQueryPreview(values: FilterFormValues): string {
-  const parts: string[] = ['in:inbox'];
+  const parts: string[] = ['in:sent'];
+  if (values.recipientEmail?.trim()) parts.push(`to:${values.recipientEmail.trim()}`);
   if (values.fromDate) parts.push(`after:${values.fromDate.replace(/-/g, '/')}`);
   if (values.toDate) {
     const d = new Date(values.toDate);
     d.setDate(d.getDate() + 1);
     parts.push(`before:${d.toISOString().split('T')[0].replace(/-/g, '/')}`);
   }
-  if (values.senderEmail?.trim()) parts.push(`from:${values.senderEmail.trim()}`);
   return parts.join(' ');
 }
 
 export default function FilterPanel({ onFetch, isLoading }: FilterPanelProps) {
   const [expanded, setExpanded] = useState(true);
 
-  const { register, handleSubmit, reset, control, formState: { isDirty } } = useForm<FilterFormValues>({
+  const { register, handleSubmit, reset, control, formState: { isDirty, errors } } = useForm<FilterFormValues>({
     resolver: zodResolver(filterSchema),
     defaultValues: { maxResults: 50 },
   });
@@ -100,13 +51,14 @@ export default function FilterPanel({ onFetch, isLoading }: FilterPanelProps) {
     onFetch({
       fromDate: data.fromDate || undefined,
       toDate: data.toDate || undefined,
-      recipient: data.senderEmail || undefined,
+      recipient: data.recipientEmail || undefined,
       maxResults: data.maxResults ?? 50,
     });
   };
 
   return (
     <div className="glass-card-solid overflow-hidden">
+      {/* Header */}
       <button
         id="filter-panel-toggle"
         onClick={() => setExpanded((v) => !v)}
@@ -117,12 +69,14 @@ export default function FilterPanel({ onFetch, isLoading }: FilterPanelProps) {
       >
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ background: 'rgba(59,130,246,0.12)' }}>
-            <Search className="w-4 h-4" style={{ color: '#3b82f6' }} strokeWidth={2} />
+            <Send className="w-4 h-4" style={{ color: '#3b82f6' }} strokeWidth={2} />
           </div>
           <div className="text-left">
-            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>Fetch Inbox Emails</p>
+            <p className="text-sm font-semibold" style={{ color: 'var(--text-primary)' }}>
+              Fetch Sent Emails
+            </p>
             <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
-              Leave all fields blank to fetch all latest inbox emails
+              Enter a recipient email to see all emails you sent to them
             </p>
           </div>
         </div>
@@ -141,36 +95,83 @@ export default function FilterPanel({ onFetch, isLoading }: FilterPanelProps) {
             style={{ overflow: 'hidden' }}
           >
             <form onSubmit={handleSubmit(onSubmit)} className="p-6 space-y-5">
-              {/* Date row */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField
-                  id="from-date"
-                  label="From Date"
-                  placeholder="Start date"
-                  icon={Calendar}
-                  type="date"
-                  registration={register('fromDate')}
+
+              {/* ── HERO: Recipient Email ── */}
+              <div
+                className="p-4 rounded-xl space-y-2"
+                style={{ background: 'rgba(59,130,246,0.06)', border: '1.5px solid rgba(59,130,246,0.25)' }}
+              >
+                <label
+                  htmlFor="recipient-email"
+                  className="text-sm font-semibold flex items-center gap-2"
+                  style={{ color: '#3b82f6' }}
+                >
+                  <AtSign className="w-4 h-4" />
+                  Whose emails do you want to fetch?
+                </label>
+                <input
+                  id="recipient-email"
+                  type="email"
+                  placeholder="Enter recipient email  e.g. prints.deluxe@gmail.com"
+                  {...register('recipientEmail')}
+                  className="w-full px-4 py-3 rounded-lg text-sm outline-none transition-all font-medium"
+                  style={{
+                    background: 'var(--bg-primary)',
+                    border: '1.5px solid rgba(59,130,246,0.4)',
+                    color: 'var(--text-primary)',
+                    fontSize: '0.95rem',
+                  }}
+                  onFocus={(e) => {
+                    e.target.style.borderColor = '#3b82f6';
+                    e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.2)';
+                  }}
+                  onBlur={(e) => {
+                    e.target.style.borderColor = 'rgba(59,130,246,0.4)';
+                    e.target.style.boxShadow = 'none';
+                  }}
                 />
-                <InputField
-                  id="to-date"
-                  label="To Date (inclusive)"
-                  placeholder="End date"
-                  icon={Calendar}
-                  type="date"
-                  registration={register('toDate')}
-                />
+                <p className="text-xs" style={{ color: 'var(--text-muted)' }}>
+                  Leave blank to fetch all sent emails (no recipient filter)
+                </p>
+                {errors.recipientEmail && (
+                  <p className="text-xs text-red-400">{errors.recipientEmail.message}</p>
+                )}
               </div>
 
-              {/* Sender + Max Results */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <InputField
-                  id="sender-email"
-                  label="Filter by Sender (optional)"
-                  placeholder="Leave blank for ALL senders"
-                  icon={User}
-                  hint="Only fill this to narrow to emails FROM a specific address"
-                  registration={register('senderEmail')}
-                />
+              {/* Date + Max Results row */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div className="space-y-1.5">
+                  <label htmlFor="from-date" className="text-xs font-medium flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
+                    <Calendar className="w-3.5 h-3.5" strokeWidth={2} />
+                    From Date
+                  </label>
+                  <input
+                    id="from-date"
+                    type="date"
+                    {...register('fromDate')}
+                    className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
+                    style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
+                    onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.15)'; }}
+                    onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.boxShadow = 'none'; }}
+                  />
+                </div>
+
+                <div className="space-y-1.5">
+                  <label htmlFor="to-date" className="text-xs font-medium flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
+                    <Calendar className="w-3.5 h-3.5" strokeWidth={2} />
+                    To Date (inclusive)
+                  </label>
+                  <input
+                    id="to-date"
+                    type="date"
+                    {...register('toDate')}
+                    className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
+                    style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)' }}
+                    onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.15)'; }}
+                    onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.boxShadow = 'none'; }}
+                  />
+                </div>
+
                 <div className="space-y-1.5">
                   <label htmlFor="max-results" className="text-xs font-medium flex items-center gap-1.5" style={{ color: 'var(--text-secondary)' }}>
                     <Hash className="w-3.5 h-3.5" strokeWidth={2} />
@@ -179,7 +180,7 @@ export default function FilterPanel({ onFetch, isLoading }: FilterPanelProps) {
                   <select
                     id="max-results"
                     {...register('maxResults', { valueAsNumber: true })}
-                    className="w-full px-3 py-2.5 rounded-lg text-sm outline-none transition-all"
+                    className="w-full px-3 py-2.5 rounded-lg text-sm outline-none"
                     style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-primary)', cursor: 'pointer' }}
                     onFocus={(e) => { e.target.style.borderColor = '#3b82f6'; e.target.style.boxShadow = '0 0 0 3px rgba(59,130,246,0.15)'; }}
                     onBlur={(e) => { e.target.style.borderColor = 'var(--border-color)'; e.target.style.boxShadow = 'none'; }}
@@ -196,17 +197,17 @@ export default function FilterPanel({ onFetch, isLoading }: FilterPanelProps) {
               {/* Live Gmail Query Preview */}
               <div
                 className="flex items-start gap-2 px-3 py-2.5 rounded-lg"
-                style={{ background: 'rgba(59,130,246,0.07)', border: '1px solid rgba(59,130,246,0.2)' }}
+                style={{ background: 'rgba(16,185,129,0.07)', border: '1px solid rgba(16,185,129,0.2)' }}
               >
-                <Terminal className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: '#3b82f6' }} />
+                <Terminal className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" style={{ color: '#10b981' }} />
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold mb-0.5" style={{ color: '#3b82f6' }}>Gmail Query Preview</p>
+                  <p className="text-xs font-semibold mb-0.5" style={{ color: '#10b981' }}>Gmail Query Preview</p>
                   <code className="text-xs break-all" style={{ color: 'var(--text-secondary)' }}>{queryPreview}</code>
                 </div>
               </div>
 
               {/* Action buttons */}
-              <div className="flex items-center gap-3 pt-1">
+              <div className="flex items-center gap-3">
                 <button
                   id="fetch-emails-btn"
                   type="submit"
@@ -227,7 +228,7 @@ export default function FilterPanel({ onFetch, isLoading }: FilterPanelProps) {
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     onClick={() => reset()}
-                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium transition-colors"
+                    className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl text-sm font-medium"
                     style={{ background: 'var(--bg-tertiary)', border: '1px solid var(--border-color)', color: 'var(--text-secondary)', cursor: 'pointer' }}
                   >
                     <RotateCcw className="w-3.5 h-3.5" />

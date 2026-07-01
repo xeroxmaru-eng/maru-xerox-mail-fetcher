@@ -4,7 +4,7 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
-import { fetchInboxEmails } from '@/services/gmail.service';
+import { fetchSentEmails } from '@/services/gmail.service';
 import { buildGmailQuery } from '@/lib/utils';
 import { ApiEmailResponse } from '@/types/email.types';
 
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiEmailRespon
     const query = buildGmailQuery({
       fromDate,
       toDate,
-      senderEmail: recipient,
+      recipientEmail: recipient,
       subjectKeyword,
       bodyKeyword,
       attachmentName,
@@ -55,8 +55,8 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiEmailRespon
 
     console.log('[API /emails] Generated query string:', query);
 
-    // Fetch emails from Gmail API
-    const emails = await fetchInboxEmails(
+    // Fetch sent emails from Gmail API
+    const emails = await fetchSentEmails(
       session.accessToken as string,
       query,
       maxResults

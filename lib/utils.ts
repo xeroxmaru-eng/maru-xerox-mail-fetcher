@@ -83,13 +83,16 @@ export function isDateThisMonth(dateStr: string): boolean {
 export function buildGmailQuery(filters: {
   fromDate?: string;
   toDate?: string;
-  senderEmail?: string;
+  recipientEmail?: string;
   subjectKeyword?: string;
   bodyKeyword?: string;
   attachmentName?: string;
 }): string {
-  const parts: string[] = ['in:inbox'];
+  const parts: string[] = ['in:sent'];
 
+  if (filters.recipientEmail) {
+    parts.push(`to:${filters.recipientEmail.trim()}`);
+  }
   if (filters.fromDate) {
     parts.push(`after:${filters.fromDate.replace(/-/g, '/')}`);
   }
@@ -99,9 +102,6 @@ export function buildGmailQuery(filters: {
     d.setDate(d.getDate() + 1);
     const inclusive = d.toISOString().split('T')[0].replace(/-/g, '/');
     parts.push(`before:${inclusive}`);
-  }
-  if (filters.senderEmail) {
-    parts.push(`from:${filters.senderEmail}`);
   }
   if (filters.subjectKeyword) {
     parts.push(`subject:${filters.subjectKeyword}`);
@@ -121,7 +121,7 @@ export function buildGmailQuery(filters: {
  */
 export function generateExportFilename(format: 'xlsx' | 'pdf' | 'docx'): string {
   const timestamp = new Date().toISOString().slice(0, 10);
-  return `maru-xerox-inbox-emails-${timestamp}.${format}`;
+  return `maru-xerox-sent-emails-${timestamp}.${format}`;
 }
 
 /**
