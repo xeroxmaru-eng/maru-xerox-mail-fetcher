@@ -5,7 +5,8 @@ export interface EmailMessage {
   id: string;
   date: string;       // "2024-01-15"
   time: string;       // "14:32"
-  from: string[];     // array of sender email addresses (inbox)
+  from: string[];     // array of sender email addresses
+  to: string[];       // array of recipient email addresses
   subject: string;
   bodyText: string;   // plain text version of the body
   bodyHtml: string;   // HTML version (sanitized before rendering)

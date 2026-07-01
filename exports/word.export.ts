@@ -90,7 +90,7 @@ export async function exportToWord(
   filters: FetchFilters
 ): Promise<void> {
   // Column widths in DXA (twentieths of a point, ~1440 DXA = 1 inch)
-  const colWidths = [1400, 900, 2400, 2800, 4000, 2000];
+  const colWidths = [1000, 700, 2000, 2000, 2400, 3200, 1700];
 
   // Build header row
   const headerRow = new TableRow({
@@ -98,10 +98,11 @@ export async function exportToWord(
     children: [
       headerCell('Date', colWidths[0]),
       headerCell('Time', colWidths[1]),
-      headerCell('Sender(s)', colWidths[2]),
-      headerCell('Subject', colWidths[3]),
-      headerCell('Body', colWidths[4]),
-      headerCell('Attachments', colWidths[5]),
+      headerCell('From', colWidths[2]),
+      headerCell('To', colWidths[3]),
+      headerCell('Subject', colWidths[4]),
+      headerCell('Body', colWidths[5]),
+      headerCell('Attachments', colWidths[6]),
     ],
   });
 
@@ -113,9 +114,10 @@ export async function exportToWord(
         dataCell(email.date, colWidths[0], isAlt),
         dataCell(email.time, colWidths[1], isAlt),
         dataCell(email.from.join(', '), colWidths[2], isAlt),
-        dataCell(email.subject, colWidths[3], isAlt),
-        dataCell(email.bodyText.slice(0, 200), colWidths[4], isAlt),
-        dataCell(email.attachments.join('\n'), colWidths[5], isAlt),
+        dataCell(email.to.join(', '), colWidths[3], isAlt),
+        dataCell(email.subject, colWidths[4], isAlt),
+        dataCell(email.bodyText.slice(0, 200), colWidths[5], isAlt),
+        dataCell(email.attachments.join('\n'), colWidths[6], isAlt),
       ],
     });
   });

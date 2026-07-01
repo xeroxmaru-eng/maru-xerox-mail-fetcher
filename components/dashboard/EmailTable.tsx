@@ -21,6 +21,7 @@ import { truncate, copyToClipboard } from '@/lib/utils';
 import AttachmentChip from './AttachmentChip';
 import Pagination from './Pagination';
 import TableSkeleton from '@/components/shared/LoadingSkeleton';
+import { useSession } from 'next-auth/react';
 
 interface EmailTableProps {
   emails: EmailMessage[];
@@ -113,6 +114,9 @@ function ActionCell({
 }
 
 export default function EmailTable({ emails, isLoading, onViewEmail }: EmailTableProps) {
+  const { data: session } = useSession();
+  const userEmail = session?.user?.email?.toLowerCase();
+
   const [sorting, setSorting] = useState<SortingState>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState<PageSize>(25);
@@ -148,19 +152,28 @@ export default function EmailTable({ emails, isLoading, onViewEmail }: EmailTabl
       size: 70,
     }),
     columnHelper.accessor('from', {
-      header: 'Recipient(s)',
+      header: 'Correspondent',
       cell: (info) => {
-        const addresses = info.getValue() ?? [];
+        const email = info.row.original;
+        const isSentByUser = email.from.some(
+          (addr) => addr.toLowerCase() === userEmail
+        );
+        const displayAddresses = isSentByUser ? email.to : email.from;
+        const prefix = isSentByUser ? 'To: ' : 'From: ';
+
         return (
           <div className="max-w-[200px]">
-            {addresses.slice(0, 2).map((addr) => (
+            <span className="text-[10px] uppercase font-bold tracking-wider block mb-0.5" style={{ color: isSentByUser ? '#3b82f6' : '#10b981' }}>
+              {prefix}
+            </span>
+            {displayAddresses.slice(0, 2).map((addr) => (
               <div key={addr} className="text-xs truncate" style={{ color: 'var(--text-secondary)' }} title={addr}>
                 {addr}
               </div>
             ))}
-            {addresses.length > 2 && (
+            {displayAddresses.length > 2 && (
               <span className="text-xs" style={{ color: 'var(--text-muted)' }}>
-                +{addresses.length - 2} more
+                +{displayAddresses.length - 2} more
               </span>
             )}
           </div>

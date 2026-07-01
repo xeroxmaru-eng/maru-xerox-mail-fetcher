@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 // components/dashboard/FilterPanel.tsx
 // Email fetch filters form - asks for recipient email first
 
@@ -25,8 +25,12 @@ interface FilterPanelProps {
 }
 
 function buildQueryPreview(values: FilterFormValues): string {
-  const parts: string[] = ['in:sent'];
-  if (values.recipientEmail?.trim()) parts.push(`to:${values.recipientEmail.trim()}`);
+  const parts: string[] = [];
+  if (values.recipientEmail?.trim()) {
+    parts.push(values.recipientEmail.trim());
+  } else {
+    parts.push('in:sent');
+  }
   if (values.fromDate) parts.push(`after:${values.fromDate.replace(/-/g, '/')}`);
   if (values.toDate) {
     const d = new Date(values.toDate);

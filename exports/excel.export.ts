@@ -36,7 +36,8 @@ export async function exportToExcel(
   sheet.columns = [
     { header: 'Date', key: 'date', width: 14 },
     { header: 'Time', key: 'time', width: 10 },
-    { header: 'Sender(s)', key: 'from', width: 35 },
+    { header: 'Sender (From)', key: 'from', width: 25 },
+    { header: 'Recipient (To)', key: 'to', width: 25 },
     { header: 'Subject', key: 'subject', width: 45 },
     { header: 'Body', key: 'body', width: 60 },
     { header: 'Attachments', key: 'attachments', width: 40 },
@@ -73,6 +74,7 @@ export async function exportToExcel(
       date: email.date,
       time: email.time,
       from: email.from.join(', '),
+      to: email.to.join(', '),
       subject: email.subject,
       body: email.bodyText,
       attachments: email.attachments.join('\n'),

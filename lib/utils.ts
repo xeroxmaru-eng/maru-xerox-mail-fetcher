@@ -88,11 +88,16 @@ export function buildGmailQuery(filters: {
   bodyKeyword?: string;
   attachmentName?: string;
 }): string {
-  const parts: string[] = ['in:sent'];
+  const parts: string[] = [];
 
-  if (filters.recipientEmail) {
-    parts.push(`to:${filters.recipientEmail.trim()}`);
+  if (filters.recipientEmail?.trim()) {
+    // Search the email address directly (matches sent, received, and WeTransfer notifications)
+    parts.push(filters.recipientEmail.trim());
+  } else {
+    // Default to sent emails when no recipient is specified
+    parts.push('in:sent');
   }
+
   if (filters.fromDate) {
     parts.push(`after:${filters.fromDate.replace(/-/g, '/')}`);
   }

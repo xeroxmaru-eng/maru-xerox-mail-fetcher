@@ -108,10 +108,14 @@ export default function EmailModal({ email, onClose }: EmailModalProps) {
                   </h2>
 
                   {/* Meta info */}
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2">
+                  <div className="flex flex-wrap gap-x-4 gap-y-2 mt-2">
                     <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
-                      <User className="w-3 h-3" />
-                      {email.from.join(', ')}
+                      <User className="w-3 h-3 text-emerald-500" />
+                      <strong>From:</strong> {email.from.join(', ')}
+                    </span>
+                    <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
+                      <User className="w-3 h-3 text-blue-500" />
+                      <strong>To:</strong> {email.to.join(', ')}
                     </span>
                     <span className="flex items-center gap-1.5 text-xs" style={{ color: 'var(--text-muted)' }}>
                       <Calendar className="w-3 h-3" />

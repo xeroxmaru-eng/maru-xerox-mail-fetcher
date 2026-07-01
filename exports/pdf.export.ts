@@ -122,12 +122,13 @@ export async function exportToPdf(
 
   // Column definitions [label, x, width]
   const cols: [string, number, number][] = [
-    ['Date',       MARGIN,       70],
-    ['Time',       MARGIN + 70,  50],
-    ['Sender',    MARGIN + 120, 160],
-    ['Subject',    MARGIN + 280, 200],
-    ['Body',       MARGIN + 480, 220],
-    ['Attachments',MARGIN + 700, 100],
+    ['Date',       MARGIN,       60],
+    ['Time',       MARGIN + 60,  40],
+    ['From',       MARGIN + 100, 120],
+    ['To',         MARGIN + 220, 120],
+    ['Subject',    MARGIN + 340, 160],
+    ['Body',       MARGIN + 500, 160],
+    ['Attachments',MARGIN + 660, 100],
   ];
 
   for (let pageIdx = 0; pageIdx < Math.ceil(emails.length / ROWS_PER_PAGE); pageIdx++) {
@@ -169,6 +170,7 @@ export async function exportToPdf(
         email.date,
         email.time,
         email.from.join(', '),
+        email.to.join(', '),
         email.subject,
         email.bodyText,
         email.attachments.join(', '),

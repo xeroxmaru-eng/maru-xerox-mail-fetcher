@@ -127,11 +127,11 @@ function parseDateHeader(dateStr: string): { date: string; time: string } {
 }
 
 /**
- * Parses "From" header into an array of email addresses.
+ * Parses email headers containing email addresses into an array of strings.
  */
-function parseFromHeader(fromStr: string): string[] {
-  if (!fromStr) return [];
-  return fromStr
+function parseEmailAddresses(headerStr: string): string[] {
+  if (!headerStr) return [];
+  return headerStr
     .split(',')
     .map((addr) => {
       // Extract just the email from "Name <email>" format
@@ -195,6 +195,7 @@ export async function fetchSentEmails(
       const dateStr = getHeader(headers, 'Date');
       const { date, time } = parseDateHeader(dateStr);
       const fromStr = getHeader(headers, 'From');
+      const toStr = getHeader(headers, 'To');
       const subject = getHeader(headers, 'Subject');
 
       const { text: bodyText, html: bodyHtml } = extractBody(
@@ -208,7 +209,8 @@ export async function fetchSentEmails(
         id: msgData.id ?? '',
         date,
         time,
-        from: parseFromHeader(fromStr),
+        from: parseEmailAddresses(fromStr),
+        to: parseEmailAddresses(toStr),
         subject: subject || '(No Subject)',
         bodyText: bodyText || '(No body)',
         bodyHtml,
