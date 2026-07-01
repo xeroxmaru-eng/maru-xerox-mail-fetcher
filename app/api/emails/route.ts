@@ -47,7 +47,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiEmailRespon
     const query = buildGmailQuery({
       fromDate,
       toDate,
-      recipient,
+      senderEmail: recipient,
       subjectKeyword,
       bodyKeyword,
       attachmentName,

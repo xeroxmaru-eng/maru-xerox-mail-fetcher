@@ -83,7 +83,7 @@ export function isDateThisMonth(dateStr: string): boolean {
 export function buildGmailQuery(filters: {
   fromDate?: string;
   toDate?: string;
-  recipient?: string;
+  senderEmail?: string;
   subjectKeyword?: string;
   bodyKeyword?: string;
   attachmentName?: string;
@@ -94,10 +94,14 @@ export function buildGmailQuery(filters: {
     parts.push(`after:${filters.fromDate.replace(/-/g, '/')}`);
   }
   if (filters.toDate) {
-    parts.push(`before:${filters.toDate.replace(/-/g, '/')}`);
+    // before: is exclusive in Gmail, so add 1 day to make toDate inclusive
+    const d = new Date(filters.toDate);
+    d.setDate(d.getDate() + 1);
+    const inclusive = d.toISOString().split('T')[0].replace(/-/g, '/');
+    parts.push(`before:${inclusive}`);
   }
-  if (filters.recipient) {
-    parts.push(`from:${filters.recipient}`);
+  if (filters.senderEmail) {
+    parts.push(`from:${filters.senderEmail}`);
   }
   if (filters.subjectKeyword) {
     parts.push(`subject:${filters.subjectKeyword}`);
