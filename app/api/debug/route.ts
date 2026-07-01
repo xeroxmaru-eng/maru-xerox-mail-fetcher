@@ -1,5 +1,5 @@
-// app/api/debug/route.ts
-// Debug endpoint — shows session token status and Gmail API raw response
+ï»¿// app/api/debug/route.ts
+// Debug endpoint - shows session token status and Gmail API raw response
 
 import { NextResponse } from 'next/server';
 import { auth } from '@/lib/auth';
