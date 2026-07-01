@@ -212,7 +212,7 @@ export default function EmailTable({ emails, isLoading, onViewEmail }: EmailTabl
       header: 'Attachments',
       enableSorting: false,
       cell: (info) => {
-        const atts = info.getValue();
+        const atts = info.getValue() ?? [];
         if (atts.length === 0) {
           return <span className="text-xs" style={{ color: 'var(--text-muted)' }}>—</span>;
         }
