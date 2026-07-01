@@ -70,14 +70,15 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiEmailRespon
       query,
     });
   } catch (error: unknown) {
-    console.error('[API /emails] Error:', error);
+    console.error('[API /emails] Full error:', JSON.stringify(error));
 
     // Handle specific Google API errors
-    const googleError = error as { code?: number; message?: string };
+    const googleError = error as { code?: number; message?: string; errors?: Array<{ message?: string; reason?: string }> };
+    const detail = googleError?.errors?.[0]?.message ?? googleError?.message ?? 'Unknown error';
 
     if (googleError?.code === 401) {
       return NextResponse.json(
-        { emails: [], totalFetched: 0, query: '', error: 'Gmail authorization expired. Please sign in again.' },
+        { emails: [], totalFetched: 0, query: '', error: `Gmail auth expired (401): ${detail}. Please sign out and sign in again.` },
         { status: 401 }
       );
     }
@@ -91,7 +92,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiEmailRespon
 
     if (googleError?.code === 403) {
       return NextResponse.json(
-        { emails: [], totalFetched: 0, query: '', error: 'Permission denied. Please ensure Gmail access is granted.' },
+        { emails: [], totalFetched: 0, query: '', error: `Permission denied (403): ${detail}. Please sign out and sign in again with Gmail access.` },
         { status: 403 }
       );
     }
@@ -101,7 +102,7 @@ export async function GET(req: NextRequest): Promise<NextResponse<ApiEmailRespon
         emails: [],
         totalFetched: 0,
         query: '',
-        error: 'An unexpected error occurred. Please try again.',
+        error: `Error fetching emails: ${detail}`,
       },
       { status: 500 }
     );
